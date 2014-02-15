@@ -61,40 +61,43 @@
     this.raf = window.requestAnimationFrame;
     
     this.ticking = false;
-  }    
+    this.uid = 1;
+  } 
   
   // bind new handlers
   Manager.prototype.on = function(element, type, handler) {
-    if(!this.instances[element]) {
-      this.instances[element] = {}
+    var uid = element.__pruneeventsid || (element.__pruneeventsid = this.uid++);    
+    if(!this.instances[uid]) {
+      this.instances[uid] = {}
     }
-    if(!this.instances[element][type]) {
-      this.instances[element][type] = new FPSEvent(this, element, type)
+    if(!this.instances[uid][type]) {
+      this.instances[uid][type] = new FPSEvent(this, element, type)
     }
     
-    this.instances[element][type].handlers.push(handler);
+    this.instances[uid][type].handlers.push(handler);
   };    
   
   Manager.prototype.off = function(element, type, handler) {
-    if(this.instances[element] && this.instances[element][type]) {
-      var handlers = this.instances[element][type].handlers;
+    var uid = element.__pruneeventsid;    
+    if(uid && this.instances[uid] && this.instances[uid][type]) {
+      var handlers = this.instances[uid][type].handlers;
       // remove the handler
       while(handlers.splice(handlers.indexOf(handler), 1).length);
       
       // no handlers left, remove the FPSEvent instance
       if(!handlers.length) {
-        this.instances[element][type].destroy();
-        delete this.instances[element][type];
+        this.instances[uid][type].destroy();
+        delete this.instances[uid][type];
       }
     }
   };
   
   // trigger events, can be used to force updates
   Manager.prototype.triggerEvents = function() {
-    var el, type, inst;
-    for(el in this.instances) {
-      for(type in this.instances[el]) {
-        this.instances[el][type].triggerHandlers();
+    var uid, type, inst;
+    for(uid in this.instances) {
+      for(type in this.instances[uid]) {
+        this.instances[uid][type].triggerHandlers();
       }
     }
     
