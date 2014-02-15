@@ -64,7 +64,7 @@
     this.uid = 1;
   } 
   
-  // bind new handlers
+  // bind handlers
   Manager.prototype.on = function(element, type, handler) {
     var uid = element.__pruneeventsid || (element.__pruneeventsid = this.uid++);    
     if(!this.instances[uid]) {
@@ -77,6 +77,7 @@
     this.instances[uid][type].handlers.push(handler);
   };    
   
+  // unbind handlers
   Manager.prototype.off = function(element, type, handler) {
     var uid = element.__pruneeventsid;    
     if(uid && this.instances[uid] && this.instances[uid][type]) {
@@ -94,7 +95,7 @@
   
   // trigger events, can be used to force updates
   Manager.prototype.triggerEvents = function() {
-    var uid, type, inst;
+    var uid, type;
     for(uid in this.instances) {
       for(type in this.instances[uid]) {
         this.instances[uid][type].triggerHandlers();
@@ -105,7 +106,7 @@
   };      
     
   // requestanimationframe
-  Manager.prototype.requestTick = function(inst) {
+  Manager.prototype.requestTick = function() {
     if(!this.ticking) {
       this.ticking = true;
       this.raf.call(window, this.triggerEvents.bind(this));
