@@ -5,9 +5,6 @@
     this.manager = manager;
     this.eventType = eventType;
     
-    // initial values
-    this.reset();
-    
     this.manager.element.addEventListener(eventType, this.frameEvent.bind(this), false);
   }
   
@@ -34,11 +31,6 @@
     this.eventData.stopImmediatePropagation = function(){ this.shouldStopImmediatePropagation = true;}.bind(this);
     
     return this.eventData;
-  };
-  
-  // reset
-  FPSEvent.prototype.reset = function() {
-    this.eventData = null;
   };
   
   // unbind
@@ -100,7 +92,7 @@
       inst = this.ev_instances[type];        
       if(inst && inst.eventData) {
         this.triggerHandlers(type, inst.prepareEventData());
-        inst.reset();
+        inst.eventData= null;
       }
     }
     
