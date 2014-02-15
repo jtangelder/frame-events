@@ -4,6 +4,8 @@ prunt-events
 The browser is flooding your code with events, which could make your page slow.
 With this library you only receive the events at 60fps, with requestAnimationFrame.
 
+Useful events would be `scroll`, `touchmove`, `mousemove` and `mousewheel`.
+
 ## How to use
 ````
 PruneEvents.on(window, "scroll", yourHandler);
