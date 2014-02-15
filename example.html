@@ -34,8 +34,7 @@
   PruneEvents.on(el, "touchend", logTouchEvent);  
   
   
-  function logScroll(ev) { console.log(ev.type, ev); }
-  PruneEvents.on(window, "scroll", logScroll);
+  PruneEvents.on(window, "scroll", console.log.bind(console));
 
 </script>
 
