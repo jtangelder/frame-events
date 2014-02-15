@@ -90,7 +90,7 @@
   };
   
   // trigger events, can be used to force updates
-  Manager.prototype.triggerEvent = function() {
+  Manager.prototype.triggerEvents = function() {
     var el, type, inst;
     for(el in this.instances) {
       for(type in this.instances[el]) {
@@ -105,7 +105,7 @@
   Manager.prototype.requestTick = function(inst) {
     if(!this.ticking) {
       this.ticking = true;
-      this.raf.call(window, this.triggerEvent.bind(this));
+      this.raf.call(window, this.triggerEvents.bind(this));
     }
   };
   
