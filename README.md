@@ -5,9 +5,23 @@ The browser is flooding your code with events, which could make your page slow.
 With this library you only receive the events at 60fps, with requestAnimationFrame.
 
 ## How to use
-````
+````js
 PruneEvents.on(window, "scroll", yourHandler);
 PruneEvents.off(window, "scroll", yourHandler);
+````
+
+````js
+// collect the paint properties
+function dataHandler() {
+  return { lastScrollY: window.scrollY }
+}
+
+// and you will receive them as the second property in your handler
+function scrollHandler(ev, data) {
+  console.log(data.lastScrollY)
+}
+
+PruneEvents.on(window, "scroll", scrollHandler, dataHandler);
 ````
 
 You can also trigger `preventDefault`, `stopPropagation` and `stopImmediatePropagation`.

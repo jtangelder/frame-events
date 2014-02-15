@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
   <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
   <style>
     
-    #el { 
-      touch-action: none;
+    #toucharea { 
       height: 300px;
       width: 100%;
       background: #eee;
+    }
+    
+    #scrollpos {
+      position: fixed;
+      top: 0;
+      right: 0;
+      background: #ccc;
+      padding: 5px;
+      font-size: 20px;
     }
     
   </style>
 </head>
 <body>
  
-<div id="el"></div>
+<div id="scrollpos"></div>
+<div id="toucharea"></div>
 
 <div style="height:600px;"></div>
 
@@ -28,14 +36,23 @@
     ev.preventDefault();
   }    
   
-  var el = document.querySelector("#el"); 
-  PruneEvents.on(el, "touchstart", logTouchEvent);
-  PruneEvents.on(el, "touchmove", logTouchEvent);
-  PruneEvents.on(el, "touchend", logTouchEvent);  
+  var toucharea = document.querySelector("#toucharea"); 
+  PruneEvents.on(toucharea, "touchstart", logTouchEvent);
+  PruneEvents.on(toucharea, "touchmove", logTouchEvent);
+  PruneEvents.on(toucharea, "touchend", logTouchEvent);  
   
   
-  function logScroll(ev) { console.log(ev.type, ev); }
-  PruneEvents.on(window, "scroll", logScroll);
+  PruneEvents.on(window, "mousemove", console.log.bind(console));
+  
+  var scrollpos = document.querySelector("#scrollpos"); 
+  PruneEvents.on(window, "scroll", function(ev, data) {
+    scrollpos.innerHTML = data.scrollX +"&times;"+ data.scrollY;
+  }, function() {
+    return {
+      scrollX: window.scrollX,
+      scrollY: window.scrollY
+    }
+  });
 
 </script>
 

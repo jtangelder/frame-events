@@ -16,6 +16,12 @@
     if(this.shouldStopPropagation) { ev.stopPropagation(); }
     if(this.shouldStopImmediatePropagation) { ev.stopImmediatePropagation(); }
     
+    this.handlers.forEach(function(handler) {
+      if(handler.dataHandler) {
+        handler.data = handler.dataHandler(ev);
+      }
+    });
+    
     this.eventData = ev;
     this.manager.requestTick(this);
   };
@@ -25,7 +31,7 @@
     if(this.eventData) {
       var ev = this.prepareEventData();
       this.handlers.forEach(function(handler) {
-        handler(ev);
+        handler.eventHandler(ev, handler.data);
       });
       this.eventData = null;
     }
@@ -61,40 +67,52 @@
     this.raf = window.requestAnimationFrame;
     
     this.ticking = false;
-  }    
+    this.uid = 1;
+  } 
   
-  // bind new handlers
-  Manager.prototype.on = function(element, type, handler) {
-    if(!this.instances[element]) {
-      this.instances[element] = {}
+  // bind handlers
+  Manager.prototype.on = function(element, type, eventHandler, dataHandler) {
+    var uid = element.__pruneeventsid || (element.__pruneeventsid = this.uid++);    
+    if(!this.instances[uid]) {
+      this.instances[uid] = {}
     }
-    if(!this.instances[element][type]) {
-      this.instances[element][type] = new FPSEvent(this, element, type)
+    if(!this.instances[uid][type]) {
+      this.instances[uid][type] = new FPSEvent(this, element, type)
     }
     
-    this.instances[element][type].handlers.push(handler);
+    this.instances[uid][type].handlers.push({ 
+      eventHandler: eventHandler, 
+      dataHandler: dataHandler
+    });
   };    
   
-  Manager.prototype.off = function(element, type, handler) {
-    if(this.instances[element] && this.instances[element][type]) {
-      var handlers = this.instances[element][type].handlers;
-      // remove the handler
-      while(handlers.splice(handlers.indexOf(handler), 1).length);
+  // unbind handlers
+  Manager.prototype.off = function(element, type, eventHandler) {
+    var uid = element.__pruneeventsid, 
+      handlers;    
+    
+    if(uid && this.instances[uid] && this.instances[uid][type]) {
+      handlers = this.instances[uid][type].handlers;
+      handlers.forEach(function(handler, index) {
+        if(eventHandler === handler.eventHandler) {
+          handlers.splice(index, 1)
+        }
+      });
       
       // no handlers left, remove the FPSEvent instance
       if(!handlers.length) {
-        this.instances[element][type].destroy();
-        delete this.instances[element][type];
+        this.instances[uid][type].destroy();
+        delete this.instances[uid][type];
       }
     }
   };
   
   // trigger events, can be used to force updates
-  Manager.prototype.triggerEvent = function() {
-    var el, type, inst;
-    for(el in this.instances) {
-      for(type in this.instances[el]) {
-        this.instances[el][type].triggerHandlers();
+  Manager.prototype.triggerEvents = function() {
+    var uid, type;
+    for(uid in this.instances) {
+      for(type in this.instances[uid]) {
+        this.instances[uid][type].triggerHandlers();
       }
     }
     
@@ -102,10 +120,10 @@
   };      
     
   // requestanimationframe
-  Manager.prototype.requestTick = function(inst) {
+  Manager.prototype.requestTick = function() {
     if(!this.ticking) {
       this.ticking = true;
-      this.raf.call(window, this.triggerEvent.bind(this));
+      this.raf.call(window, this.triggerEvents.bind(this));
     }
   };
   
