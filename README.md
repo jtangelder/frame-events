@@ -34,10 +34,10 @@ For support of [older browsers](http://caniuse.com/#feat=requestanimationframe) 
 
 Also, the lib makes use of 
 [`Function.prototype.bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind).
-A polyfill is available on this page.
+A polyfill is available on this page. Easiest way is just to include the [es5-shim](https://github.com/es-shims/es5-shim). 
 
 
-## Related articles
+### Related articles
 - [Leaner, Meaner, Faster Animations with requestAnimationFrame](http://www.html5rocks.com/en/tutorials/speed/animations/)
 - [Scrolling Performance](http://www.html5rocks.com/en/tutorials/speed/scrolling/)
 - [JankFree.org](http://jankfree.org/)
