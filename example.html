@@ -28,15 +28,14 @@
     ev.preventDefault();
   }    
   
-  var touch = new PruneEvents(document.querySelector("#el"));  
-  touch.on("touchstart", logTouchEvent);
-  touch.on("touchmove", logTouchEvent);
-  touch.on("touchend", logTouchEvent);  
+  var el = document.querySelector("#el"); 
+  PruneEvents.on(el, "touchstart", logTouchEvent);
+  PruneEvents.on(el, "touchmove", logTouchEvent);
+  PruneEvents.on(el, "touchend", logTouchEvent);  
   
   
   function logScroll(ev) { console.log(ev.type, ev); }
-  var scroll = new PruneEvents(window);
-  scroll.on("scroll", logScroll);
+  PruneEvents.on(window, "scroll", logScroll);
 
 </script>
 

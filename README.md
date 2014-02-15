@@ -6,9 +6,8 @@ With this library you only receive the events at 60fps, with requestAnimationFra
 
 ## How to use
 ````
-var scroll = new PruneEvents(window);
-scroll.on("scroll", yourHandler); // bind
-scroll.off("scroll", yourHandler); // unbind
+PruneEvents.on(window, "scroll", yourHandler);
+PruneEvents.off(window, "scroll", yourHandler);
 ````
 
 You can also trigger `preventDefault`, `stopPropagation` and `stopImmediatePropagation`.
