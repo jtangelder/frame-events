@@ -40,3 +40,4 @@ when older browsers need to be supported.
 - [Leaner, Meaner, Faster Animations with requestAnimationFrame](http://www.html5rocks.com/en/tutorials/speed/animations/)
 - [Scrolling Performance](http://www.html5rocks.com/en/tutorials/speed/scrolling/)
 - [JankFree.org](http://jankfree.org/)
+- [How (not) to trigger a layout in WebKit](http://gent.ilcore.com/2011/03/how-not-to-trigger-layout-in-webkit.html)
