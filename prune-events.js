@@ -1,4 +1,4 @@
-var PruneEvents = (function(window){
+(function(window){
   
   // instance per event
   function FPSEvent(manager, eventType) {
@@ -115,5 +115,12 @@ var PruneEvents = (function(window){
     }
   };
   
-  return Manager;
+  
+  // commonjs export
+  if(typeof(module) !== 'undefined' && module.exports) {
+    module.exports = Manager;
+  }
+  else {
+    window.PruneEvents = Manager;
+  }
 })(window || global);
