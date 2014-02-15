@@ -13,12 +13,12 @@ PruneEvents.off(window, "scroll", yourHandler);
 ````
 
 ````js
-// collect the paint properties
+// collect the layout properties...
 function dataHandler() {
   return { lastScrollY: window.scrollY }
 }
 
-// and you will receive them as the second property in your handler
+// ...and you will receive them as the second property in your handler
 function scrollHandler(ev, data) {
   console.log(data.lastScrollY)
 }
