@@ -1,3 +1,6 @@
+/*! Prune Events
+ * Copyright (c) 2014 Jorik Tangelder <j.tangelder@gmail.com>;
+ * Licensed under the MIT license */
 (function(window){
   
   // instance per event
