@@ -1,4 +1,4 @@
-prunt-events
+prune-events
 ============
 
 The browser is flooding your code with events, which could make your page slow.
