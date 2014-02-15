@@ -1,3 +1,6 @@
+/*! Prune Events
+ * Copyright (c) 2014 Jorik Tangelder <j.tangelder@gmail.com>;
+ * Licensed under the MIT license */
 (function(window){
   
   // instance per event
@@ -71,7 +74,11 @@
   } 
   
   // bind handlers
+<<<<<<< HEAD
   Manager.prototype.on = function(element, type, eventHandler, dataHandler) {
+=======
+  Manager.prototype.on = function(element, type, handler) {
+>>>>>>> c6085a2d1cbf1cd331915c7f9a6aa28251ba4822
     var uid = element.__pruneeventsid || (element.__pruneeventsid = this.uid++);    
     if(!this.instances[uid]) {
       this.instances[uid] = {}
@@ -80,6 +87,7 @@
       this.instances[uid][type] = new FPSEvent(this, element, type)
     }
     
+<<<<<<< HEAD
     this.instances[uid][type].handlers.push({ 
       eventHandler: eventHandler, 
       dataHandler: dataHandler
@@ -98,6 +106,18 @@
           handlers.splice(index, 1)
         }
       });
+=======
+    this.instances[uid][type].handlers.push(handler);
+  };    
+  
+  // unbind handlers
+  Manager.prototype.off = function(element, type, handler) {
+    var uid = element.__pruneeventsid;    
+    if(uid && this.instances[uid] && this.instances[uid][type]) {
+      var handlers = this.instances[uid][type].handlers;
+      // remove the handler
+      while(handlers.splice(handlers.indexOf(handler), 1).length);
+>>>>>>> c6085a2d1cbf1cd331915c7f9a6aa28251ba4822
       
       // no handlers left, remove the FPSEvent instance
       if(!handlers.length) {

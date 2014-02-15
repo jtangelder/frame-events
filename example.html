@@ -41,18 +41,21 @@
   PruneEvents.on(toucharea, "touchmove", logTouchEvent);
   PruneEvents.on(toucharea, "touchend", logTouchEvent);  
   
-  
   PruneEvents.on(window, "mousemove", console.log.bind(console));
   
   var scrollpos = document.querySelector("#scrollpos"); 
-  PruneEvents.on(window, "scroll", function(ev, data) {
-    scrollpos.innerHTML = data.scrollX +"&times;"+ data.scrollY;
-  }, function() {
-    return {
-      scrollX: window.scrollX,
-      scrollY: window.scrollY
+  
+  PruneEvents.on(window, "scroll", 
+    function(ev, data) {
+      scrollpos.innerHTML = data.scrollX +"&times;"+ data.scrollY;
+    }, 
+    function() {
+      return {
+        scrollX: window.scrollX,
+        scrollY: window.scrollY
+      };
     }
-  });
+  );
 
 </script>
 
