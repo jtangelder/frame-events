@@ -26,9 +26,6 @@ function scrollHandler(ev, data) {
 PruneEvents.on(window, "scroll", scrollHandler, dataHandler);
 ````
 
-You can also trigger `preventDefault`, `stopPropagation` and `stopImmediatePropagation`.
-Since the events are fired async, these will be triggered on the next DOM event.
-
 For support of [older browsers](http://caniuse.com/#feat=requestanimationframe) you should include a 
 [`requestAnimationFrame`](https://gist.github.com/paulirish/1579671) polyfill.
 
