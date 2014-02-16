@@ -14,7 +14,7 @@ PruneEvents.off(window, "scroll", yourHandler);
 
 ````js
 // collect the layout properties...
-function dataHandler() {
+function dataHandler(ev) {
   return { lastScrollY: window.scrollY }
 }
 
