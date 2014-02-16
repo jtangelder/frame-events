@@ -33,12 +33,11 @@
   
   function logTouchEvent(ev) {
     console.log(ev.type, ev);
-    ev.preventDefault();
   }    
   
   var toucharea = document.querySelector("#toucharea"); 
   PruneEvents.on(toucharea, "touchstart", logTouchEvent);
-  PruneEvents.on(toucharea, "touchmove", logTouchEvent);
+  PruneEvents.on(toucharea, "touchmove", logTouchEvent, function(ev){ ev.preventDefault() });
   PruneEvents.on(toucharea, "touchend", logTouchEvent);  
   
   PruneEvents.on(window, "mousemove", console.log.bind(console));
