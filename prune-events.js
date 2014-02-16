@@ -15,10 +15,6 @@
   
   // request tick and execute the preventDefault methods
   FPSEvent.prototype.frameEvent = function(ev) {
-    if(this.shouldPreventDefault) { ev.preventDefault(); }
-    if(this.shouldStopPropagation) { ev.stopPropagation(); }
-    if(this.shouldStopImmediatePropagation) { ev.stopImmediatePropagation(); }
-    
     this.handlers.forEach(function(handler) {
       if(handler.dataHandler) {
         handler.data = handler.dataHandler(ev);
@@ -32,27 +28,11 @@
   // trigger handles of this type
   FPSEvent.prototype.triggerHandlers = function() {
     if(this.eventData) {
-      var ev = this.prepareEventData();
       this.handlers.forEach(function(handler) {
-        handler.eventHandler(ev, handler.data);
-      });
+        handler.eventHandler(this.eventData, handler.data);
+      }.bind(this));
       this.eventData = null;
     }
-  };
-  
-  // set new preventDefault methods
-  // they will get executed when the next dom event occurs
-  // useful for the 'touchmove' event
-  FPSEvent.prototype.prepareEventData = function() {
-    this.shouldPreventDefault = false;
-    this.shouldStopPropagation = false;
-    this.shouldStopImmediatePropagation = false;
-    
-    this.eventData.preventDefault = function(){ this.shouldPreventDefault = true;}.bind(this);
-    this.eventData.stopPropagation = function(){ this.shouldStopPropagation = true;}.bind(this);
-    this.eventData.stopImmediatePropagation = function(){ this.shouldStopImmediatePropagation = true;}.bind(this);
-    
-    return this.eventData;
   };
   
   // unbind
