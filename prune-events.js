@@ -118,4 +118,4 @@
   else {
     window.PruneEvents = new Manager();
   }
-})(window || global);
+})(window);
