@@ -1,10 +1,10 @@
-/*! Prune Events
+/*! Frame Events
  * Copyright (c) 2014 Jorik Tangelder <j.tangelder@gmail.com>;
  * Licensed under the MIT license */
 (function(window){
   
   // instance per event
-  function FPSEvent(manager, element, eventType) {
+  function FrameEvent(manager, element, eventType) {
     this.manager = manager;
     this.element = element;
     this.eventType = eventType;
@@ -14,7 +14,7 @@
   }
   
   // request tick and execute the preventDefault methods
-  FPSEvent.prototype.frameEvent = function(ev) {
+  FrameEvent.prototype.frameEvent = function(ev) {
     this.handlers.forEach(function(handler) {
       if(handler.dataHandler) {
         handler.data = handler.dataHandler(ev);
@@ -26,7 +26,7 @@
   };
   
   // trigger handles of this type
-  FPSEvent.prototype.triggerHandlers = function() {
+  FrameEvent.prototype.triggerHandlers = function() {
     if(this.eventData) {
       this.handlers.forEach(function(handler) {
         handler.eventHandler(this.eventData, handler.data);
@@ -36,7 +36,7 @@
   };
   
   // unbind
-  FPSEvent.prototype.destroy = function() {
+  FrameEvent.prototype.destroy = function() {
     this.element.removeEventListener(this.eventType, this.frameEvent)
   };
   
@@ -44,10 +44,11 @@
   
   // manages the event handlers and ticking
   function Manager() { 
-    this.instances = {};
+    this.events = {};
     
     // overwrite this to use or embed it in your own ticker
     this.raf = window.requestAnimationFrame;
+    this.uidp = '__feuid'
     
     this.ticking = false;
     this.uid = 1;
@@ -55,15 +56,15 @@
   
   // bind handlers
   Manager.prototype.on = function(element, type, eventHandler, dataHandler) {
-    var uid = element.__pruneeventsid || (element.__pruneeventsid = this.uid++);    
-    if(!this.instances[uid]) {
-      this.instances[uid] = {}
+    var uid = element[this.uidp] || (element[this.uidp] = this.uid++);    
+    if(!this.events[uid]) {
+      this.events[uid] = {}
     }
-    if(!this.instances[uid][type]) {
-      this.instances[uid][type] = new FPSEvent(this, element, type)
+    if(!this.events[uid][type]) {
+      this.events[uid][type] = new FrameEvent(this, element, type)
     }
     
-    this.instances[uid][type].handlers.push({ 
+    this.events[uid][type].handlers.push({ 
       eventHandler: eventHandler, 
       dataHandler: dataHandler
     });
@@ -71,21 +72,21 @@
   
   // unbind handlers
   Manager.prototype.off = function(element, type, eventHandler) {
-    var uid = element.__pruneeventsid, 
+    var uid = element[this.uidp], 
       handlers;    
     
-    if(uid && this.instances[uid] && this.instances[uid][type]) {
-      handlers = this.instances[uid][type].handlers;
+    if(uid && this.events[uid] && this.events[uid][type]) {
+      handlers = this.events[uid][type].handlers;
       handlers.forEach(function(handler, index) {
         if(eventHandler === handler.eventHandler) {
           handlers.splice(index, 1)
         }
       });
       
-      // no handlers left, remove the FPSEvent instance
+      // no handlers left, remove the FrameEvent instance
       if(!handlers.length) {
-        this.instances[uid][type].destroy();
-        delete this.instances[uid][type];
+        this.events[uid][type].destroy();
+        delete this.events[uid][type];
       }
     }
   };
@@ -93,9 +94,9 @@
   // trigger events, can be used to force updates
   Manager.prototype.triggerEvents = function() {
     var uid, type;
-    for(uid in this.instances) {
-      for(type in this.instances[uid]) {
-        this.instances[uid][type].triggerHandlers();
+    for(uid in this.events) {
+      for(type in this.events[uid]) {
+        this.events[uid][type].triggerHandlers();
       }
     }
     
@@ -116,6 +117,6 @@
     module.exports = new Manager();
   }
   else {
-    window.PruneEvents = new Manager();
+    window.FrameEvents = new Manager();
   }
 })(window);

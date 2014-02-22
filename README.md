@@ -1,4 +1,4 @@
-prune-events
+frame-events
 ============
 
 The browser is flooding your code with events, which could make your page slow.
@@ -8,8 +8,8 @@ Useful events would be `scroll`, `resize`, `touchmove`, `mousemove` and `mousewh
 
 ## How to use
 ````js
-PruneEvents.on(window, "scroll", yourHandler);
-PruneEvents.off(window, "scroll", yourHandler);
+FrameEvents.on(window, "scroll", yourHandler);
+FrameEvents.off(window, "scroll", yourHandler);
 ````
 
 ````js
@@ -23,7 +23,7 @@ function scrollHandler(ev, data) {
   console.log(data.lastScrollY)
 }
 
-PruneEvents.on(window, "scroll", scrollHandler, dataHandler);
+FrameEvents.on(window, "scroll", scrollHandler, dataHandler);
 ````
 
 For support of [older browsers](http://caniuse.com/#feat=requestanimationframe) you should include a 

@@ -28,7 +28,7 @@
 
 <div style="height:600px;"></div>
 
-<script src="prune-events.js"></script>
+<script src="./frame-events.js"></script>
 <script>
   
   function logTouchEvent(ev) {
@@ -36,15 +36,15 @@
   }    
   
   var toucharea = document.querySelector("#toucharea"); 
-  PruneEvents.on(toucharea, "touchstart", logTouchEvent);
-  PruneEvents.on(toucharea, "touchmove", logTouchEvent, function(ev){ ev.preventDefault() });
-  PruneEvents.on(toucharea, "touchend", logTouchEvent);  
+  FrameEvents.on(toucharea, "touchstart", logTouchEvent);
+  FrameEvents.on(toucharea, "touchmove", logTouchEvent, function(ev){ ev.preventDefault() });
+  FrameEvents.on(toucharea, "touchend", logTouchEvent);  
   
-  PruneEvents.on(window, "mousemove", console.log.bind(console));
+  FrameEvents.on(window, "mousemove", console.log.bind(console));
   
   var scrollpos = document.querySelector("#scrollpos"); 
   
-  PruneEvents.on(window, "scroll", 
+  FrameEvents.on(window, "scroll", 
     function(ev, data) {
       scrollpos.innerHTML = data.scrollX +"&times;"+ data.scrollY;
     }, 
