@@ -32,6 +32,7 @@ For support of [older browsers](http://caniuse.com/#feat=requestanimationframe) 
 Also, the lib makes use of some ES5 features. Easiest way is just to include the [es5-shim](https://github.com/es-shims/es5-shim)
 when older browsers need to be supported.
 
+Available on bower, named `frame-events`.
 
 ### Related articles
 - [Leaner, Meaner, Faster Animations with requestAnimationFrame](http://www.html5rocks.com/en/tutorials/speed/animations/)
