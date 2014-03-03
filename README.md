@@ -29,9 +29,6 @@ FrameEvents.on(window, "scroll", scrollHandler, dataHandler);
 For support of [older browsers](http://caniuse.com/#feat=requestanimationframe) you should include a 
 [`requestAnimationFrame`](https://gist.github.com/paulirish/1579671) polyfill.
 
-Also, the lib makes use of some ES5 features. Easiest way is just to include the [es5-shim](https://github.com/es-shims/es5-shim)
-when older browsers need to be supported.
-
 Available on bower, named `frame-events`.
 
 ### Related articles
