@@ -1,37 +1,39 @@
 /*! Frame Events
  * Copyright (c) 2014 Jorik Tangelder <j.tangelder@gmail.com>;
  * Licensed under the MIT license */
-(function(window){
-  
-  // instance per event
-  function FrameEvent(manager, element, eventType) {
-    this.manager = manager;
+
+ (function(window){
+   
+  function FrameEvent(element, eventType, eventHandler, dataHandler) {
     this.element = element;
     this.eventType = eventType;
-    this.handlers = [];
+    this.eventHandler = eventHandler;
+    this.dataHandler = dataHandler;
+    
+    this.extraData = null;
     
     this.element.addEventListener(eventType, this.frameEvent.bind(this), false);
   }
   
   // request tick and execute the preventDefault methods
   FrameEvent.prototype.frameEvent = function(ev) {
-    this.handlers.forEach(function(handler) {
-      if(handler.dataHandler) {
-        handler.data = handler.dataHandler(ev);
-      }
-    });
+    // collect data if there is a handler
+    if(this.dataHandler) {
+      this.extraData = this.dataHandler.call(this.element, ev);
+    }
     
     this.eventData = ev;
-    this.manager.requestTick(this);
+    Manager.requestTick();
   };
   
   // trigger handles of this type
-  FrameEvent.prototype.triggerHandlers = function() {
+  FrameEvent.prototype.trigger = function() {
+    // event was captured, now trigger the handler
     if(this.eventData) {
-      this.handlers.forEach(function(handler) {
-        handler.eventHandler(this.eventData, handler.data);
-      }.bind(this));
-      this.eventData = null;
+      this.eventHandler.call(this.element, this.eventData, this.extraData);
+      
+      // reset
+      this.eventData = this.extraData = null;
     }
   };
   
@@ -41,82 +43,57 @@
   };
   
   
+  // raf state
+  var ticking = false;
   
   // manages the event handlers and ticking
-  function Manager() { 
-    this.events = {};
-    
+  var Manager = { 
+    // holds all events
+    events: [],
+  
     // overwrite this to use or embed it in your own ticker
-    this.raf = window.requestAnimationFrame;
-    this.uidp = '__feuid'
+    raf: window.requestAnimationFrame,
     
-    this.ticking = false;
-    this.uid = 1;
-  } 
-  
-  // bind handlers
-  Manager.prototype.on = function(element, type, eventHandler, dataHandler) {
-    var uid = element[this.uidp] || (element[this.uidp] = this.uid++);    
-    if(!this.events[uid]) {
-      this.events[uid] = {}
-    }
-    if(!this.events[uid][type]) {
-      this.events[uid][type] = new FrameEvent(this, element, type)
-    }
+    // bind event
+    on: function(element, eventType, eventHandler, dataHandler) {
+      this.events.push(
+        new FrameEvent(element, eventType, eventHandler, dataHandler)
+      );
+    },  
     
-    this.events[uid][type].handlers.push({ 
-      eventHandler: eventHandler, 
-      dataHandler: dataHandler
-    });
-  };    
-  
-  // unbind handlers
-  Manager.prototype.off = function(element, type, eventHandler) {
-    var uid = element[this.uidp], 
-      handlers;    
-    
-    if(uid && this.events[uid] && this.events[uid][type]) {
-      handlers = this.events[uid][type].handlers;
-      handlers.forEach(function(handler, index) {
-        if(eventHandler === handler.eventHandler) {
-          handlers.splice(index, 1)
+    // unbind
+    off: function(element, eventType, eventHandler) {
+      this.events.forEach(function(fe, index) {
+        if(element === fe.element && 
+           eventType === fe.eventType && 
+           eventHandler === fe.eventHandler) {
+          this.events.splice(index, 1)
         }
+      }.bind(this));      
+    },
+    
+    // trigger events, called by raf
+    // the FrameEvent determines if it really should trigger
+    triggerEvents: function() {
+      this.events.forEach(function(fe) {
+        fe.trigger();
       });
-      
-      // no handlers left, remove the FrameEvent instance
-      if(!handlers.length) {
-        this.events[uid][type].destroy();
-        delete this.events[uid][type];
+      ticking = false;
+    },    
+    
+    requestTick: function() {
+      if(!ticking) {
+        ticking = true;
+        this.raf.call(window, this.triggerEvents.bind(this));
       }
     }
-  };
-  
-  // trigger events, can be used to force updates
-  Manager.prototype.triggerEvents = function() {
-    var uid, type;
-    for(uid in this.events) {
-      for(type in this.events[uid]) {
-        this.events[uid][type].triggerHandlers();
-      }
-    }
-    
-    this.ticking = false;
-  };      
-    
-  // requestanimationframe
-  Manager.prototype.requestTick = function() {
-    if(!this.ticking) {
-      this.ticking = true;
-      this.raf.call(window, this.triggerEvents.bind(this));
-    }
-  };
-  
+  };  
   
   // commonjs export
   if(typeof(module) !== 'undefined' && module.exports) {
-    module.exports = new Manager();
+    module.exports = Manager;
   }
   else {
-    window.FrameEvents = new Manager();
+    window.FrameEvents = Manager;
   }
 })(window);
