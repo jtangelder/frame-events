@@ -12,12 +12,10 @@
     this.el.addEventListener(type, this.frameEvent.bind(this), false);
   }
   
-  // request tick and execute the preventDefault methods
+  // request tick for the event 
   FrameEvent.prototype.frameEvent = function(ev) {
     // collect data if there is a handler
-    if(this.domHandler) {
-      this._data = this.domHandler.call(this.element, ev);
-    }
+    this._data = this.domHandler && this.domHandler.call(this.element, ev);
     
     this._ev = ev;
     Manager.requestTick();
