@@ -39,5 +39,6 @@ Available on bower, named `frame-events`.
 
 ### cChangelog
 
-0.0.1: removed es5 dependency and simplified the codebade
-0.0.0: initial
+- 0.0.1: removed es5 dependency and simplified the codebade
+
+- 0.0.0: initial
