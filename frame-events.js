@@ -4,19 +4,20 @@
 
 (function(window){   
   
+  // frame event instances
   function FrameEvent(el, type, handler, domHandler) {
     var _data, _ev;
     
     // setup
-    el.addEventListener(type, frameEvent, false); 
+    el.addEventListener(type, frame, false); 
         
     // request tick for the event 
-    function frameEvent(ev) {
+    function frame(ev) {
       // collect data if there is a handler
       _data = domHandler && domHandler.call(el, ev);      
       _ev = ev;
       
-      Manager.requestTick();
+      requestTick();
     }
     
     // trigger handlers
@@ -30,24 +31,42 @@
 
     // remove the frameEvent 
     this.destroy = function() {
-      el.removeEventListener(type, frameEvent);
+      el.removeEventListener(type, frame);
     };
     
     // test if the arguments are matching, this is used for removing the event
     this.match = function(m_el, m_type, m_handler) {
-      return el == m_el && type == m_type && handler == m_handler
-    }
+      return el == m_el && type == m_type && handler == m_handler;
+    };
   }
   
   
   // raf state
-  var ticking = false;
-  
+  var ticking = false,    
+    
   // holds all frame event instances
-  var events = [];
+  events = [],
+    
+  // trigger events, called by raf
+  // the FrameEvent determines if it really should trigger
+  triggerEvents = function() {
+    var i = -1;
+    while(events[++i]){
+      events[i].trigger();
+    }
+    ticking = false;
+  },    
+  
+  // raf trick
+  requestTick = function() {
+    if(!ticking) {
+      ticking = true;
+      Manager.raf.call(window, triggerEvents);
+    }
+  },
   
   // manages the event handlers and ticking
-  var Manager = {  
+  Manager = {  
     // overwrite this to use or embed it in your own ticker
     raf: window.requestAnimationFrame,
     
@@ -58,28 +77,13 @@
     
     // unbind
     off: function(el, type, handler) {      
-      for(var i=0; i<events.length; i++) {
+      var i = -1;
+      while(events[++i]){
         if(events[i].match(el, type, handler)) {
           events[i].destroy();
           events.splice(i, 1);
           return;
         }
-      }
-    },
-    
-    // trigger events, called by raf
-    // the FrameEvent determines if it really should trigger
-    trigger: function() {
-      for(var i=0; i<events.length; i++) {
-        events[i].trigger();
-      }
-      ticking = false;
-    },    
-    
-    requestTick: function() {
-      if(!ticking) {
-        ticking = true;
-        this.raf.call(window, this.trigger);
       }
     }
   };  
