@@ -3,84 +3,83 @@
  * Licensed under the MIT license */
 
 (function(window){   
-  function FrameEvent(element, type, handler, domHandler) {
-    this.el = element;
-    this.type = type;
-    this.handler = handler;
-    this.domHandler = domHandler;
-    
-    this.el.addEventListener(type, this.frameEvent.bind(this), false);
-  }
   
-  // request tick for the event 
-  FrameEvent.prototype.frameEvent = function(ev) {
-    // collect data if there is a handler
-    this._data = this.domHandler && this.domHandler.call(this.element, ev);
+  function FrameEvent(el, type, handler, domHandler) {
+    var _data, _ev;
     
-    this._ev = ev;
-    Manager.requestTick();
-  };
-  
-  // trigger handles of this type
-  FrameEvent.prototype.trigger = function() {
-    // event was captured, now trigger the handler
-    if(this._ev) {
-      this.handler.call(this.el, this._ev, this._data);
+    // setup
+    el.addEventListener(type, frameEvent, false); 
+        
+    // request tick for the event 
+    function frameEvent(ev) {
+      // collect data if there is a handler
+      _data = domHandler && domHandler.call(el, ev);      
+      _ev = ev;
       
-      // reset
-      this._ev = this._data = null;
+      Manager.requestTick();
     }
-  };
-  
-  // unbind
-  FrameEvent.prototype.destroy = function() {
-    this.el.removeEventListener(this.type, this.frameEvent);
-  };
+    
+    // trigger handlers
+    this.trigger = function() {
+      // event was captured, now trigger the handler
+      if(_ev) {
+        handler.call(el, _ev, _data);
+        _ev = _data = null; // reset for the next tick
+      }
+    };
+
+    // remove the frameEvent 
+    this.destroy = function() {
+      el.removeEventListener(type, frameEvent);
+    };
+    
+    // test if the arguments are matching, this is used for removing the event
+    this.match = function(m_el, m_type, m_handler) {
+      return el == m_el && type == m_type && handler == m_handler
+    }
+  }
   
   
   // raf state
   var ticking = false;
   
-  // manages the event handlers and ticking
-  var Manager = { 
-    // holds all events
-    events: [],
+  // holds all frame event instances
+  var events = [];
   
+  // manages the event handlers and ticking
+  var Manager = {  
     // overwrite this to use or embed it in your own ticker
     raf: window.requestAnimationFrame,
     
     // bind event
     on: function(el, type, handler, domHandler) {
-      this.events.push(
-        new FrameEvent(el, type, handler, domHandler)
-      );
+      events.push(new FrameEvent(el, type, handler, domHandler));
     },  
     
     // unbind
-    off: function(el, type, handler) {
-      this.events.forEach(function(fe, index) {
-        if(el == fe.el && 
-           type == fe.type && 
-           handler == fe.handler) {
-          fe.destroy();
-          this.events.splice(index, 1)
+    off: function(el, type, handler) {      
+      for(var i= 0, len=events.length; i<len; i++) {
+        if(events[i].match(el, type, handler)) {
+          events[i].destroy();
+          events.splice(i, 1);
+          return;
         }
-      }.bind(this));      
+      }
     },
     
     // trigger events, called by raf
     // the FrameEvent determines if it really should trigger
     trigger: function() {
-      this.events.forEach(function(fe) {
-        fe.trigger();
-      });
+      for(var i= 0, len=events.length; i<len; i++) {
+        events[i].trigger();
+      }
       ticking = false;
     },    
     
     requestTick: function() {
       if(!ticking) {
         ticking = true;
-        this.raf.call(window, this.trigger.bind(this));
+        this.raf.call(window, this.trigger);
       }
     }
   };  
