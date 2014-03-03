@@ -58,7 +58,7 @@
     
     // unbind
     off: function(el, type, handler) {      
-      for(var i= 0, len=events.length; i<len; i++) {
+      for(var i=0; i<events.length; i++) {
         if(events[i].match(el, type, handler)) {
           events[i].destroy();
           events.splice(i, 1);
@@ -70,7 +70,7 @@
     // trigger events, called by raf
     // the FrameEvent determines if it really should trigger
     trigger: function() {
-      for(var i= 0, len=events.length; i<len; i++) {
+      for(var i=0; i<events.length; i++) {
         events[i].trigger();
       }
       ticking = false;
