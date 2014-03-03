@@ -2,44 +2,41 @@
  * Copyright (c) 2014 Jorik Tangelder <j.tangelder@gmail.com>;
  * Licensed under the MIT license */
 
- (function(window){
-   
-  function FrameEvent(element, eventType, eventHandler, dataHandler) {
+(function(window){   
+  function FrameEvent(element, type, eventHandler, dataHandler) {
     this.element = element;
-    this.eventType = eventType;
+    this.type = type;
     this.eventHandler = eventHandler;
     this.dataHandler = dataHandler;
     
-    this.extraData = null;
-    
-    this.element.addEventListener(eventType, this.frameEvent.bind(this), false);
+    this.element.addEventListener(type, this.frameEvent.bind(this), false);
   }
   
   // request tick and execute the preventDefault methods
   FrameEvent.prototype.frameEvent = function(ev) {
     // collect data if there is a handler
     if(this.dataHandler) {
-      this.extraData = this.dataHandler.call(this.element, ev);
+      this._data = this.dataHandler.call(this.element, ev);
     }
     
-    this.eventData = ev;
+    this._evData = ev;
     Manager.requestTick();
   };
   
   // trigger handles of this type
   FrameEvent.prototype.trigger = function() {
     // event was captured, now trigger the handler
-    if(this.eventData) {
-      this.eventHandler.call(this.element, this.eventData, this.extraData);
+    if(this._evData) {
+      this.eventHandler.call(this.element, this._evData, this._data);
       
       // reset
-      this.eventData = this.extraData = null;
+      this._evData = this._data = null;
     }
   };
   
   // unbind
   FrameEvent.prototype.destroy = function() {
-    this.element.removeEventListener(this.eventType, this.frameEvent)
+    this.element.removeEventListener(this.type, this.frameEvent)
   };
   
   
@@ -55,18 +52,19 @@
     raf: window.requestAnimationFrame,
     
     // bind event
-    on: function(element, eventType, eventHandler, dataHandler) {
+    on: function(element, type, eventHandler, dataHandler) {
       this.events.push(
-        new FrameEvent(element, eventType, eventHandler, dataHandler)
+        new FrameEvent(element, type, eventHandler, dataHandler)
       );
     },  
     
     // unbind
-    off: function(element, eventType, eventHandler) {
+    off: function(element, type, eventHandler) {
       this.events.forEach(function(fe, index) {
         if(element === fe.element && 
-           eventType === fe.eventType && 
+           type === fe.type && 
            eventHandler === fe.eventHandler) {
+          fe.destroy();
           this.events.splice(index, 1)
         }
       }.bind(this));      
