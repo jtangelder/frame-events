@@ -36,3 +36,8 @@ Available on bower, named `frame-events`.
 - [Scrolling Performance](http://www.html5rocks.com/en/tutorials/speed/scrolling/)
 - [JankFree.org](http://jankfree.org/)
 - [How (not) to trigger a layout in WebKit](http://gent.ilcore.com/2011/03/how-not-to-trigger-layout-in-webkit.html)
+
+### cChangelog
+
+0.0.1: removed es5 dependency and simplified the codebade
+0.0.0: initial
