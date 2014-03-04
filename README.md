@@ -37,7 +37,7 @@ Available on bower, named `frame-events`.
 - [JankFree.org](http://jankfree.org/)
 - [How (not) to trigger a layout in WebKit](http://gent.ilcore.com/2011/03/how-not-to-trigger-layout-in-webkit.html)
 
-### cChangelog
+### Changelog
 
-- 0.0.1: removed es5 dependency and simplified the codebade
+- 0.0.1: removed es5 dependency and refactored
 - 0.0.0: initial
